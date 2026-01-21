@@ -9,6 +9,3 @@
     => Giúp hệ thống tương tác với nhau gửi/nhận các event/message một cách bất đồng bộ
 ```
 ![diagram](./img-01.png)
-```
-
-```
