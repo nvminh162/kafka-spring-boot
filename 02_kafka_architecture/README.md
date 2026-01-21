@@ -26,3 +26,16 @@ Consumer: là ứng dụng hoặc dịch vụ chịu trách nhiệm nhận event
 Producer và Consumer: là ứng dụng chạy độc lập với kafka cluster
 Kafka ở giữa đóng vai trò nhận event từ producer & consumer sẽ đọc event từ kafka về để xử lý
 ```
+```
+Kafka highlights:
++ Core capabilities (Khả năng cốt lõi)
+    - High Throughput (Băng thông cao)
+    - Scalability (Khả năng mở rộng)
+    - Permanent storage (Lưu trữ vĩnh viễn)
+    - High availability (Tính sẵn sàng cao)
++ Ecosystem (Hệ sinh thái)
+    - Connect to almost anything (Kết nối với hầu hết mọi thứ)
+    - Client libraries (Thư viện khách hàng)
+    - Large ecosystem (Hệ sinh thái lớn)
++ Trust & ease of use (Độ tin cậy & dễ sử dụng)
+```
