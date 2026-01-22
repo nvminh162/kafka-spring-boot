@@ -1,3 +1,30 @@
+server:
+#  port: 8082
+  servlet:
+    context-path: /notifications
+
 spring:
   application:
     name: notification-service
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.nvminh162.notification_service.model.MessageDTO
+
+  mail:
+    default-encoding: UTF-8
+    host: smtp.gmail.com
+    port: 587
+    username: nvminh1602@gmail.com
+    password: mylbblstkuvcvdzs
+    protocol: smtp
+    test-connection: true
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
