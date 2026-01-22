@@ -1,3 +1,24 @@
+# https://docs.confluent.io/platform/current/installation/configuration/producer-configs.html
+
+server:
+  port: 8081
+
 spring:
   application:
     name: account-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      # account-service gửi event lên kafka server
+      # 0: không quan tâm việc event này có lưu thành công vào kafka server hay không? => tự xác minh đã gửi thaành công => (gửi tốc độ cao sẽ xảy ra trường hợp mất event)
+      # 1: event này sẽ được lưu thành công vào leader, nhưng không đợi để lưu vào follower => tự xác minh đã gửi thaành công => (có những trường hợp event vẫn bị mất, leader ghi xong event thì fail luôn dẫn đến follower chưa kịp copy)
+      # -1 or all: FOR SURE => event này buộc phải ghi thành công vào leader & follower copy lại thành công thì mới xác minh thành công
+      # all: Khi tính năng đảm bảo tính nhất quán được bật, Kafka yêu cầu `acks` phải được đặt thành `all` (hoặc `-1`) để đảm bảo thứ tự tin nhắn và ngăn ngừa tin nhắn trùng lặp.
+      acks: -1
+      retries: 1 # gửi lại 1 lần khi acks báo fail => sẽ có những trường hợp event bị duplicate khi gửi lại nhiều lần => sinh thêm: enable.idempotence: true
+      properties:
+        enable.idempotence: true # giúp check trùng event trong trường hợp retries
+        max.in.flight.requests.per.connection: 5 # số lượng request tối đa < 5 => chống lại duplicat event
+
+
