@@ -10,6 +10,10 @@ spring:
   datasource:
     url: jdbc:h2:mem:statistic_db
 
+  h2:
+    console:
+      enabled: true
+
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
