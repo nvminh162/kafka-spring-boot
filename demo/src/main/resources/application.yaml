@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kafka-demo
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+    
+    # Producer config - gửi message
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all  # Đảm bảo message được ghi thành công
+    
+    # Consumer config - nhận message
+    consumer:
+      group-id: demo-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest  # Đọc từ đầu nếu chưa có offset
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.example.demo.model.Message
