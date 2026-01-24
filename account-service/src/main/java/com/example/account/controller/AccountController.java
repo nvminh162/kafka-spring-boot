@@ -1,8 +1,12 @@
 package com.example.account.controller;
 
-import com.example.account.model.AccountDTO;
-import com.example.account.model.MessageDTO;
-import com.example.account.model.StatisticDTO;
+import com.example.account.model.Account;
+import com.example.account.model.Message;
+import com.example.account.model.Statistic;
+import com.example.account.repository.AccountRepository;
+import com.example.account.repository.MessageRepository;
+import com.example.account.repository.StatisticRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -14,43 +18,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
 
-    KafkaTemplate<String, Object> kafkaTemplate;
+    AccountRepository accountRepository;
+    MessageRepository messageRepository;
+    StatisticRepository statisticRepository;
 
     @PostMapping("/new")
-    public AccountDTO create(@RequestBody AccountDTO accountDTO) {
+    public Account create(@RequestBody Account accountDTO) {
 
-        StatisticDTO statisticDTO = StatisticDTO.builder()
+        Statistic statisticDTO = Statistic.builder()
                 .message("Account " + accountDTO.getEmail() + " is created")
                 .createdDate(new Date())
+                .status(false)
                 .build();
 
-        MessageDTO messageDTO = MessageDTO.builder()
+        Message messageDTO = Message.builder()
                 .to(accountDTO.getEmail())
                 .toName(accountDTO.getName())
                 .subject("Welcome to Nguyen Van Minh - 22003405")
                 .content("Nguyen Van Minh 22003405 is practice `software design architecture`")
+                .status(false)
                 .build();
 
-        for (int i = 0; i < 100; i++) {
-            kafkaTemplate.send("notification", messageDTO).whenComplete((result, ex) -> {
-                if (ex == null) {
-                    // handle success
-                    System.out.println(result.getRecordMetadata().partition());
-                } else {
-                    // handle fail, save db event failed
-                    ex.printStackTrace();
-                }
-            });
-        }
+        accountRepository.save(accountDTO);
+        messageRepository.save(messageDTO);
+        statisticRepository.save(statisticDTO);
 
         // key ngẫu nhiên
         // kafkaTemplate.send("notification", messageDTO);
-        kafkaTemplate.send("statistic", statisticDTO);
+        // kafkaTemplate.send("statistic", statisticDTO);
 
         return accountDTO;
     }
