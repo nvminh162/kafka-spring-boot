@@ -1,0 +1,366 @@
+{
+	"info": {
+		"_postman_id": "kafka-demo-collection",
+		"name": "Kafka Demo - Topic, Partition, Offset",
+		"description": "Collection để test và hiểu về Kafka Topic, Partition, Offset",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Gửi message KHÔNG có key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains message\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Message sent\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Hello Kafka! This is a message without key.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/no-key",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"no-key"
+					]
+				},
+				"description": "Gửi message KHÔNG có key.\n\n**Kết quả:**\n- Message được gửi vào partition ngẫu nhiên (0, 1, hoặc 2)\n- Check logs của ứng dụng để xem partition và offset\n\n**Giải thích:**\n- Khi không có key, Kafka sẽ phân phối message ngẫu nhiên vào các partitions\n- Message có thể vào partition 0, 1, hoặc 2 (tùy thuộc vào load balancing)"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Gửi message CÓ key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains key info\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"key\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"This message has a key, so it will go to a specific partition.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/with-key?key=user123",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"with-key"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "user123",
+							"description": "Key của message. Cùng key → cùng partition"
+						}
+					]
+				},
+				"description": "Gửi message CÓ key.\n\n**Kết quả:**\n- Message được gửi vào partition được hash từ key\n- Cùng key → cùng partition\n- Check logs để xem partition và offset\n\n**Giải thích:**\n- Kafka sử dụng hash của key để xác định partition\n- Tất cả messages với key=\"user123\" sẽ vào cùng 1 partition\n- Đảm bảo thứ tự (ordering) của messages với cùng key"
+			},
+			"response": []
+		},
+		{
+			"name": "2b. Gửi message với key khác",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"This message has a different key, so it might go to a different partition.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/with-key?key=user456",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"with-key"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "user456",
+							"description": "Key khác với user123 → có thể vào partition khác"
+						}
+					]
+				},
+				"description": "Gửi message với key khác để so sánh.\n\n**Thử nghiệm:**\n- Gửi message với key=\"user456\"\n- So sánh với message có key=\"user123\"\n- Xem chúng có vào cùng partition không"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Gửi nhiều messages (batch)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response mentions batch\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"10 messages\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/messages/batch",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"batch"
+					]
+				},
+				"description": "Gửi 10 messages không có key.\n\n**Kết quả:**\n- Gửi 10 messages\n- Messages được phân phối vào các partitions khác nhau\n- Check logs để xem partition distribution\n\n**Giải thích:**\n- Mỗi message không có key → phân phối ngẫu nhiên\n- Messages sẽ được phân phối đều trên 3 partitions (0, 1, 2)\n- Xem logs để thấy messages vào partition nào"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Gửi messages với cùng key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response mentions same partition\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"same partition\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/messages/same-key?key=user123",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"same-key"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "user123",
+							"description": "Key để test. Tất cả messages với key này sẽ vào cùng partition"
+						}
+					]
+				},
+				"description": "Gửi 5 messages với cùng key.\n\n**Kết quả:**\n- Gửi 5 messages với cùng key=\"user123\"\n- Tất cả sẽ vào cùng 1 partition\n- Check logs để xác nhận\n\n**Giải thích:**\n- Cùng key → cùng partition (đảm bảo thứ tự)\n- Messages sẽ có offset liên tiếp trong cùng partition\n- Ví dụ: Partition 1, Offset 0, 1, 2, 3, 4"
+			},
+			"response": []
+		},
+		{
+			"name": "4b. Gửi messages với key khác",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/messages/same-key?key=user999",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"same-key"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "user999",
+							"description": "Key khác để so sánh với user123"
+						}
+					]
+				},
+				"description": "Gửi 5 messages với key khác để so sánh.\n\n**Thử nghiệm:**\n- Gửi với key=\"user999\"\n- So sánh với key=\"user123\"\n- Xem chúng có vào cùng partition không"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Custom message content",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"content\": \"Your custom message here\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/messages/no-key",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"messages",
+						"no-key"
+					]
+				},
+				"description": "Template để gửi message với nội dung tùy chỉnh.\n\n**Sử dụng:**\n- Thay đổi nội dung trong body\n- Có thể thêm key bằng cách dùng endpoint `/with-key`"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}
