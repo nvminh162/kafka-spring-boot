@@ -15,7 +15,7 @@ spring:
       enabled: true
 
   kafka:
-    bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+    bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
@@ -25,3 +25,5 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.nvminh162.statistic.model.Statistic
+    listener:
+      ack-mode: batch

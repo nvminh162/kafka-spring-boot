@@ -20,7 +20,7 @@ spring:
     show-sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+    bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       # account-service gửi event lên kafka server
