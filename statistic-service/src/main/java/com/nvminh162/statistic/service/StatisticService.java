@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Service;
+import org.springframework.kafka.annotation.BackOff;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class StatisticService {
     /*
     Tạo topics retry 2000 x 2 = 4000, 4000 x 2 = 8000, 8000 x 2 = 16000
     */
+    // @RetryableTopic(attempts = "5", dltTopicSuffix = "dlt", backOff = @BackOff(delay = 2_000, multiplier = 2))
     @KafkaListener(id = "statisticGroup", topics = "statistic")
     public void listen(Statistic statistic) {
         log.info("Received: {}", statistic);
