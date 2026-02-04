@@ -20,11 +20,9 @@ public class StatisticService {
     @KafkaListener(id = "statisticGroup", topics = "statistic")
     public void listen(Statistic statistic) {
         log.info("Received: {}", statistic);
-        statisticRepository.save(statistic);
-        log.error("LOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
-
+        // statisticRepository.save(statistic);
         // demo nếu listener này ném ra exception cố gắng gửi lại 2 lần, nếu không được sẽ gửi event vào dlt topic
-        // throw new RuntimeException("Test error");
+        throw new RuntimeException();
     }
 
     // @KafkaListener(id = "dltGroup", topics = "statistic.DLT")
