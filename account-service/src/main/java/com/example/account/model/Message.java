@@ -24,10 +24,10 @@ public class Message {
 
     @Column(name = "`to`")  // Escape reserved keyword "to"
     String to;
-    
+
     @Column(name = "to_name")
     String toName;
-    
+
     String subject;
     String content;
     boolean status;

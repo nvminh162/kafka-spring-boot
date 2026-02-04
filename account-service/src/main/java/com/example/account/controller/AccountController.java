@@ -46,13 +46,9 @@ public class AccountController {
                 .status(false)
                 .build();
 
-        // accountRepository.save(accountDTO);
-        // messageRepository.save(messageDTO);
-        // statisticRepository.save(statisticDTO);
-
-        // key ngẫu nhiên
-        kafkaTemplate.send("notification", messageDTO);
-        kafkaTemplate.send("statistic", statisticDTO);
+        accountRepository.save(accountDTO);
+        messageRepository.save(messageDTO);
+        statisticRepository.save(statisticDTO);
 
         return accountDTO;
     }
