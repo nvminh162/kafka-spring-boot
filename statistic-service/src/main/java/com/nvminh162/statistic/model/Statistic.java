@@ -21,4 +21,5 @@ public class Statistic {
     Integer id;
     String message;
     Date createdDate;
+    Boolean status;
 }

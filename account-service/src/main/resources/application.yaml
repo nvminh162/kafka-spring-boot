@@ -33,6 +33,6 @@ spring:
       properties:
         enable.idempotence: true # giúp check trùng event trong trường hợp retries
         max.in.flight.requests.per.connection: 5 # số lượng request tối đa < 5 => chống lại duplicat event
-        request.timeout.ms: 1 # trong vòng 1 ms nếu không nhận được phản hồi từ kafka server xem như event gửi lên bị fail => sẽ gọi retries: 1 => nếu vẫn fail thì không thành công
+        request.timeout.ms: 10000 # trong vòng 1 ms nếu không nhận được phản hồi từ kafka server xem như event gửi lên bị fail => sẽ gọi retries: 1 => nếu vẫn fail thì không thành công
 
 

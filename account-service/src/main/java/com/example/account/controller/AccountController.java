@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,7 @@ import java.util.Date;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
 
+    KafkaTemplate<String, Object> kafkaTemplate;
     AccountRepository accountRepository;
     MessageRepository messageRepository;
     StatisticRepository statisticRepository;
@@ -44,13 +46,13 @@ public class AccountController {
                 .status(false)
                 .build();
 
-        accountRepository.save(accountDTO);
-        messageRepository.save(messageDTO);
-        statisticRepository.save(statisticDTO);
+        // accountRepository.save(accountDTO);
+        // messageRepository.save(messageDTO);
+        // statisticRepository.save(statisticDTO);
 
         // key ngẫu nhiên
-        // kafkaTemplate.send("notification", messageDTO);
-        // kafkaTemplate.send("statistic", statisticDTO);
+        kafkaTemplate.send("notification", messageDTO);
+        kafkaTemplate.send("statistic", statisticDTO);
 
         return accountDTO;
     }

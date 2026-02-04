@@ -21,5 +21,15 @@ public class StatisticService {
     public void listen(Statistic statistic) {
         log.info("Received: {}", statistic);
         statisticRepository.save(statistic);
+        log.error("LOGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG");
+
+        // demo nếu listener này ném ra exception cố gắng gửi lại 2 lần, nếu không được sẽ gửi event vào dlt topic
+        // throw new RuntimeException("Test error");
     }
+
+    // @KafkaListener(id = "dltGroup", topics = "statistic.DLT")
+    // public void listenDLT(Statistic statistic) {
+    //     log.info("Received DLT: {}", statistic);
+    //     // save to dlt db & gửi lại kafka broker server
+    // }
 }
