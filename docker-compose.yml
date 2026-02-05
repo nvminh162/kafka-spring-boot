@@ -19,7 +19,13 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9092",
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -44,7 +50,13 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9093"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9093",
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -69,52 +81,46 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9094"]
+      test:
+        [
+          "CMD",
+          "kafka-broker-api-versions",
+          "--bootstrap-server",
+          "localhost:9094",
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
   # microservice
-  # account-service:
-  #   build:
-  #     context: account-service
-  #     dockerfile: Dockerfile
-  #   image: account-service
-  #   ports:
-  #     - 8081:8081
-  #   restart: on-failure
-  #   depends_on:
-  #     - kafka-1
-  #     - kafka-2
-  #     - kafka-3
-  #   environment:
-  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29093,kafka-3:29094
+  accountservice:
+    build:
+      context: account-service
+      dockerfile: Dockerfile
+    image: account-service
+    ports:
+      - 8081:8081
+    restart: "no"
+    env_file:
+      - local.env
 
-  # statistic-service:
-  #   build:
-  #     context: statistic-service
-  #     dockerfile: Dockerfile
-  #   image: statistic-service
-  #   ports:
-  #     - 8083:8083
-  #   restart: on-failure
-  #   depends_on:
-  #     - kafka-1
-  #     - kafka-2
-  #     - kafka-3
-  #   environment:
-  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29093,kafka-3:29094
+  statisticservice:
+    build:
+      context: statistic-service
+      dockerfile: Dockerfile
+    image: statistic-service
+    ports:
+      - 8083:8083
+    restart: "no"
+    env_file:
+      - local.env
 
-  # notification-service:
-  #   build:
-  #     context: notification-service
-  #     dockerfile: Dockerfile
-  #   image: notification-service
-  #   ports:
-  #     - 8082:8082
-  #   restart: on-failure
-  #   depends_on:
-  #     - kafka-1
-  #     - kafka-2
-  #     - kafka-3
-  #   environment:
-  #     SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29093,kafka-3:29094
+  notificationservice:
+    build:
+      context: notification-service
+      dockerfile: Dockerfile
+    image: notification-service
+    ports:
+      - 8082:8082
+    restart: "no"
+    env_file:
+      - local.env
