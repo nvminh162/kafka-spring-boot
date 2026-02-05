@@ -4,7 +4,7 @@ services:
     ports:
       - 9092:9092
       - 19092:19092
-    restart: "on-failure"
+    restart: "no"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -29,7 +29,7 @@ services:
     ports:
       - 9093:9093
       - 19093:19093
-    restart: "on-failure"
+    restart: "no"
     environment:
       KAFKA_NODE_ID: 2
       KAFKA_PROCESS_ROLES: broker,controller
@@ -54,7 +54,7 @@ services:
     ports:
       - 9094:9094
       - 19094:19094
-    restart: "on-failure"
+    restart: "no"
     environment:
       KAFKA_NODE_ID: 3
       KAFKA_PROCESS_ROLES: broker,controller
