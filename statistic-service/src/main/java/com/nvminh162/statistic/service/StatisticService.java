@@ -27,12 +27,12 @@ public class StatisticService {
     @KafkaListener(id = "statisticGroup", topics = "statistic")
     public void listen(Statistic statistic) {
         log.info("Received: {}", statistic);
-        // Tạo entity mới không có ID để tránh conflict khi save
         Statistic newStatistic = Statistic.builder()
                 .message(statistic.getMessage())
                 .createdDate(statistic.getCreatedDate())
                 .status(statistic.getStatus())
                 .build();
+
         statisticRepository.save(newStatistic);
         // demo nếu listener này ném ra exception cố gắng gửi lại 2 lần, nếu không được
         // sẽ gửi event vào dlt topic
